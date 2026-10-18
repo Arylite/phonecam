@@ -1,0 +1,24 @@
+# Windows (CMake)
+windows/build*/
+.vs/
+*.user
+
+# Android (Gradle)
+.gradle/
+.kotlin/
+build/
+local.properties
+!android/gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+# .vscode/ is shared on purpose: recommended extensions and settings.
+
+# Signing material never goes in the repo
+*.keystore
+*.jks
+
+# OS
+.DS_Store
+Thumbs.db

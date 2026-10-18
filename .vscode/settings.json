@@ -1,0 +1,14 @@
+{
+  "cmake.sourceDirectory": "${workspaceFolder}/windows",
+  "cmake.buildDirectory": "${workspaceFolder}/windows/build",
+  "cmake.configureArgs": ["-A", "x64"],
+  "editor.rulers": [140],
+  "files.exclude": {
+    "**/.gradle": true,
+    "**/.kotlin": true
+  },
+  "search.exclude": {
+    "**/build": true,
+    "windows/build*": true
+  }
+}
