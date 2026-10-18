@@ -52,4 +52,4 @@ Push a tag like `v1.2.3`: CI builds both sides and publishes them on a GitHub re
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The app uses the [Barlow](https://github.com/jpt/barlow) typeface under the [SIL Open Font License](docs/licenses/Barlow-OFL.txt).

@@ -15,6 +15,12 @@ data class UiState(
     val liveSince: Long = 0,
 )
 
+/** What the waiting screen checks: the two things the phone itself can see. */
+data class DeviceState(
+    val usbDebugging: Boolean = false,
+    val usbCable: Boolean = false,
+)
+
 /** Phone-side settings; resolution, frame rate and bitrate come from the PC. */
 data class Settings(
     val port: Int = DEFAULT_PORT,

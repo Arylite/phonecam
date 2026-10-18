@@ -1,24 +1,21 @@
 package re.isx.phonecam.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,7 +36,10 @@ import re.isx.phonecam.R
 import re.isx.phonecam.Settings
 import re.isx.phonecam.StreamConfig
 
-/** Every change applies at once; only the port waits for the sheet to close (it reconnects). */
+/**
+ * What the rail does not already show. Changes apply at once; only the port waits for the sheet
+ * to close, since it reconnects.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsSheet(
@@ -57,102 +57,82 @@ fun SettingsSheet(
     ModalBottomSheet(
         onDismissRequest = close,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = Palette.Surface,
+        containerColor = Palette.Rail,
+        shape = MaterialTheme.shapes.small,
     ) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .navigationBarsPadding()
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(bottom = 16.dp),
         ) {
-            Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.settings), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp))
 
-            Column {
-                SectionLabel(stringResource(R.string.section_camera))
-                Choice(
-                    listOf(stringResource(R.string.lens_back), stringResource(R.string.lens_front)),
-                    if (settings.frontLens) 1 else 0,
-                ) { onChange(settings.copy(frontLens = it == 1)) }
-                Spacer(Modifier.height(12.dp))
-                Choice(
-                    listOf(stringResource(R.string.orientation_landscape), stringResource(R.string.orientation_portrait)),
-                    if (settings.portrait) 1 else 0,
-                ) { onChange(settings.copy(portrait = it == 1)) }
-                Toggle(stringResource(R.string.autofocus), stringResource(R.string.autofocus_hint), settings.autofocus) {
-                    onChange(settings.copy(autofocus = it))
+            Row(Modifier.fillMaxWidth().padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f).padding(end = 16.dp)) {
+                    Text(stringResource(R.string.preview), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.preview_hint), style = MaterialTheme.typography.bodySmall, color = Palette.TextDim)
                 }
-                Toggle(stringResource(R.string.preview), stringResource(R.string.preview_hint), settings.preview) {
-                    onChange(settings.copy(preview = it))
-                }
+                Switch(
+                    settings.preview,
+                    { onChange(settings.copy(preview = it)) },
+                    colors =
+                        SwitchDefaults.colors(
+                            checkedTrackColor = Palette.Accent,
+                            checkedThumbColor = Palette.Background,
+                            uncheckedTrackColor = Palette.Background,
+                            uncheckedBorderColor = Palette.Line,
+                            uncheckedThumbColor = Palette.TextDim,
+                        ),
+                )
             }
+            HorizontalDivider(color = Palette.Line)
 
-            Column {
-                SectionLabel(stringResource(R.string.section_connection))
+            Row(Modifier.fillMaxWidth().padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f).padding(end = 16.dp)) {
+                    Text(stringResource(R.string.port), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(if (portValid) R.string.port_hint else R.string.port_invalid),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (portValid) Palette.TextDim else Palette.Error,
+                    )
+                }
                 OutlinedTextField(
                     value = port,
                     onValueChange = { v -> port = v.filter(Char::isDigit).take(5) },
-                    label = { Text(stringResource(R.string.port)) },
-                    supportingText = { Text(stringResource(if (portValid) R.string.port_hint else R.string.port_invalid)) },
                     isError = !portValid,
                     singleLine = true,
+                    textStyle = ReadoutValue,
+                    shape = MaterialTheme.shapes.extraSmall,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.width(110.dp),
                 )
-                config?.let {
-                    Text(
-                        stringResource(R.string.stream_from_pc, it.width, it.height, it.fps, it.bitrate / 1_000_000f),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            }
+            HorizontalDivider(color = Palette.Line)
+
+            config?.let {
+                Text(
+                    stringResource(R.string.stream_from_pc, it.width, it.height, it.fps, it.bitrate / 1_000_000f),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Palette.TextDim,
+                    modifier = Modifier.padding(vertical = 14.dp),
+                )
+                HorizontalDivider(color = Palette.Line)
             }
 
-            Column {
-                SectionLabel(stringResource(R.string.section_about))
-                val uri = LocalUriHandler.current
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        stringResource(R.string.version, BuildConfig.VERSION_NAME),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f),
-                    )
-                    TextButton({ uri.openUri(SOURCE_URL) }) { Text(stringResource(R.string.source_code)) }
-                }
+            val uri = LocalUriHandler.current
+            Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.version, BuildConfig.VERSION_NAME),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Palette.TextDim,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton({ uri.openUri(SOURCE_URL) }) { Text(stringResource(R.string.source_code), color = Palette.Accent) }
             }
         }
     }
-}
-
-@Composable
-private fun Choice(
-    options: List<String>,
-    selected: Int,
-    onSelect: (Int) -> Unit,
-) = SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-    options.forEachIndexed { i, label ->
-        SegmentedButton(
-            selected = i == selected,
-            onClick = { onSelect(i) },
-            shape = SegmentedButtonDefaults.itemShape(i, options.size),
-        ) { Text(label) }
-    }
-}
-
-@Composable
-private fun Toggle(
-    title: String,
-    hint: String,
-    checked: Boolean,
-    onChange: (Boolean) -> Unit,
-) = Row(Modifier.fillMaxWidth().padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-    Column(Modifier.weight(1f).padding(end = 16.dp)) {
-        Text(title, style = MaterialTheme.typography.bodyLarge)
-        Text(hint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-    Switch(checked, onChange)
 }
 
 private const val SOURCE_URL = "https://github.com/Arylite/phonecam"

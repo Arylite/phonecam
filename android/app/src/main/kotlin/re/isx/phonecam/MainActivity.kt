@@ -1,17 +1,25 @@
 package re.isx.phonecam
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.ContentObserver
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
+import android.os.BatteryManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+import android.provider.Settings.Global
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.TextureView
@@ -40,6 +48,7 @@ class MainActivity :
     private lateinit var prefs: SharedPreferences
     private var ui by mutableStateOf(UiState())
     private var settings by mutableStateOf(Settings())
+    private var device by mutableStateOf(DeviceState())
     private var displayRotation = 0
     private var outputRotation = 0
     private lateinit var orientation: OrientationEventListener
@@ -81,12 +90,16 @@ class MainActivity :
                     startActivity(Intent(ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)))
                 },
             )
-        setContent { PhoneCamTheme { App(ui, settings, actions) } }
+        setContent { PhoneCamTheme { App(ui, settings, device, actions) } }
     }
 
     override fun onResume() {
         super.onResume()
         orientation.enable()
+        // Sticky: the current battery state comes back at once, then every change.
+        registerReceiver(power, IntentFilter(Intent.ACTION_BATTERY_CHANGED))?.let(::onPower)
+        contentResolver.registerContentObserver(Global.getUriFor(Global.ADB_ENABLED), false, adb)
+        refreshUsbDebugging()
         when {
             checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> connect()
             // Asking on every resume would loop once the user picks "don't ask again".
@@ -101,6 +114,8 @@ class MainActivity :
     override fun onPause() {
         super.onPause()
         orientation.disable()
+        unregisterReceiver(power)
+        contentResolver.unregisterContentObserver(adb)
         disconnect()
     }
 
@@ -277,6 +292,29 @@ class MainActivity :
     private fun currentDisplayRotation() = windowManager.defaultDisplay.rotation * 90
 
     private fun now() = SystemClock.elapsedRealtime()
+
+    // Device checks for the waiting screen.
+    private val power =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) = onPower(intent)
+        }
+
+    private val adb =
+        object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) = refreshUsbDebugging()
+        }
+
+    private fun onPower(intent: Intent) {
+        val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+        device = device.copy(usbCable = plugged and BatteryManager.BATTERY_PLUGGED_USB != 0)
+    }
+
+    private fun refreshUsbDebugging() {
+        device = device.copy(usbDebugging = Global.getInt(contentResolver, Global.ADB_ENABLED, 0) == 1)
+    }
 
     private companion object {
         const val SWITCH_WITHIN_DEGREES = 50

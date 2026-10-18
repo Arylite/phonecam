@@ -3,56 +3,60 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyEllipsis,TypographyDashes">
     <string name="app_name">PhoneCam</string>
 
-    <!-- Controls -->
-    <string name="switch_camera">Switch camera</string>
+    <!-- Rail: label, current value, and what a tap does (for screen readers) -->
+    <string name="control_view">View</string>
+    <string name="control_lens">Lens</string>
+    <string name="control_focus">Focus</string>
+    <string name="control_more">More</string>
+    <string name="orientation_landscape">Landscape</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="lens_back">Back</string>
+    <string name="lens_front">Front</string>
+    <string name="focus_auto">Auto</string>
+    <string name="focus_locked">Locked</string>
     <string name="to_portrait">Switch to portrait</string>
     <string name="to_landscape">Switch to landscape</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="focus_lock">Lock focus</string>
+    <string name="focus_unlock">Turn autofocus back on</string>
     <string name="settings">Settings</string>
 
-    <!-- Status bar -->
-    <string name="state_waiting">Waiting for PC</string>
+    <!-- Top readouts -->
+    <string name="state_waiting">Offline</string>
     <string name="state_starting">Starting</string>
-    <string name="state_live">LIVE</string>
+    <string name="state_live">Live</string>
     <string name="state_error">Error</string>
-    <string name="state_no_permission">No camera access</string>
-    <string name="stream_format">%1$dx%2$d - %3$d fps</string>
+    <string name="readout_format">Format</string>
+    <string name="readout_fps">Fps</string>
+    <string name="readout_bitrate">Mbit/s</string>
 
-    <!-- Waiting screen -->
-    <string name="waiting_title">Connect to your PC</string>
-    <string name="waiting_text">Your phone becomes a USB webcam for any app on Windows. Listening on port %1$d.</string>
-    <string name="steps_title">Three steps</string>
-    <string name="step_debugging">Turn on USB debugging</string>
-    <string name="step_debugging_hint">Settings, About phone, tap Build number 7 times, then Developer options.</string>
-    <string name="step_plug">Plug the phone into the PC</string>
-    <string name="step_plug_hint">Use a data cable and allow USB debugging when asked.</string>
-    <string name="step_pc">Open PhoneCam on the PC</string>
-    <string name="step_pc_hint">The stream starts by itself once it is running.</string>
-
-    <!-- Status cards -->
-    <string name="starting_title">Starting the camera...</string>
-    <string name="preview_off_title">Streaming, preview off</string>
-    <string name="preview_off_text">Your PC is receiving the camera. Turn the preview back on in the settings.</string>
+    <!-- Viewfinder messages -->
+    <string name="waiting_title">Waiting for the PC</string>
+    <string name="waiting_text">The stream starts on its own once all three are ready.</string>
+    <string name="check_debugging">USB debugging</string>
+    <string name="check_cable">USB cable</string>
+    <string name="check_pc">PhoneCam on the PC</string>
+    <string name="check_on">On</string>
+    <string name="check_off">Off</string>
+    <string name="check_connected">Connected</string>
+    <string name="check_not_detected">Not detected</string>
+    <string name="check_waiting">Port %1$d</string>
+    <string name="check_debugging_hint">Settings, About phone: tap Build number 7 times. Then Developer options, USB debugging.</string>
+    <string name="starting_title">Starting the camera</string>
+    <string name="preview_off_title">Streaming</string>
+    <string name="preview_off_text">The preview is off. Turn it on in Settings to see the image here.</string>
     <string name="error_title">Cannot stream</string>
     <string name="permission_title">Camera access needed</string>
-    <string name="permission_text">PhoneCam needs the camera to stream it to your PC. Nothing is recorded or sent anywhere else.</string>
+    <string name="permission_text">The image goes to your PC over the cable and nowhere else.</string>
     <string name="permission_action">Open app settings</string>
 
     <!-- Settings -->
-    <string name="section_camera">Camera</string>
-    <string name="lens_back">Back</string>
-    <string name="lens_front">Front</string>
-    <string name="orientation_landscape">Landscape</string>
-    <string name="orientation_portrait">Portrait</string>
-    <string name="autofocus">Autofocus</string>
-    <string name="autofocus_hint">When off, the camera focuses once and keeps that focus.</string>
     <string name="preview">Preview</string>
-    <string name="preview_hint">Turning it off saves a little battery.</string>
-    <string name="section_connection">Connection</string>
+    <string name="preview_hint">Off saves a little battery.</string>
     <string name="port">Port</string>
-    <string name="port_hint">Must match the port set in PhoneCam on the PC.</string>
-    <string name="port_invalid">Enter a port between 1024 and 65535.</string>
+    <string name="port_hint">Same as in PhoneCam on the PC.</string>
+    <string name="port_invalid">Between 1024 and 65535.</string>
     <string name="stream_from_pc">The PC asks for %1$dx%2$d at %3$d fps, %4$.1f Mbit/s.</string>
-    <string name="section_about">About</string>
     <string name="version">PhoneCam %1$s</string>
     <string name="source_code">Source code</string>
 
